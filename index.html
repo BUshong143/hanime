@@ -162,11 +162,6 @@
   .sidebar-link:hover { color: var(--text); background: var(--surface2); }
   .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(232,69,69,0.06); }
   .sidebar-link svg { width: 18px; height: 18px; flex-shrink: 0; }
-  .sidebar-badge {
-    margin-left: auto; font-size: 0.65rem; font-weight: 600;
-    background: var(--accent); color: #fff;
-    padding: 1px 7px; border-radius: 50px;
-  }
   .sidebar-divider { height: 1px; background: var(--border); margin: 0.75rem 1.25rem; }
 
   .main { margin-left: var(--sidebar-w); padding-top: var(--nav-h); min-height: 100vh; }
@@ -278,9 +273,6 @@
   .card-meta { display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; color: var(--text2); }
   .card-rating { display: flex; align-items: center; gap: 0.2rem; color: var(--gold); }
   .card-type { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.5px; background: var(--surface3); padding: 2px 6px; border-radius: 4px; color: var(--text2); }
-  .card-badge { position: absolute; top: 0.5rem; left: 0.5rem; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.3px; padding: 2px 8px; border-radius: 4px; }
-  .badge-new { background: var(--accent); color: #fff; }
-  .badge-ep { background: rgba(0,0,0,0.7); color: var(--text); border: 1px solid var(--border2); }
 
   /* PLAYER */
   .player-view {
@@ -311,28 +303,66 @@
   .player-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
   .video-wrapper { width: 100%; background: #000; aspect-ratio: 16/9; position: relative; flex-shrink: 0; }
   .video-wrapper iframe { width: 100%; height: 100%; border: none; display: block; }
+
+  /* VIDEO STATUS OVERLAY */
+  .video-status {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: #000; gap: 1rem;
+    z-index: 10;
+  }
+  .video-status.hidden { display: none; }
+  .video-status-icon { font-size: 3rem; }
+  .video-status-title { font-family: 'Bebas Neue', cursive; font-size: 1.5rem; letter-spacing: 1px; }
+  .video-status-sub { font-size: 0.85rem; color: var(--text2); text-align: center; max-width: 360px; line-height: 1.6; }
+  .video-quality-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: rgba(232,69,69,0.2); border: 1px solid rgba(232,69,69,0.4);
+    color: var(--accent); font-size: 0.75rem; font-weight: 600;
+    padding: 0.25rem 0.75rem; border-radius: 50px;
+  }
+
   .player-info { padding: 1.25rem 1.5rem; }
   .player-anime-title { font-family: 'Bebas Neue', cursive; font-size: 1.8rem; letter-spacing: 1px; margin-bottom: 0.25rem; }
-  .player-ep-info { font-size: 0.875rem; color: var(--text2); margin-bottom: 1rem; }
+  .player-ep-info { font-size: 0.875rem; color: var(--text2); margin-bottom: 0.75rem; }
   .player-desc { font-size: 0.875rem; color: var(--text2); line-height: 1.7; }
 
   /* SOURCE SWITCHER */
-  .source-switcher {
-    display: flex; gap: 0.5rem; flex-wrap: wrap;
-    padding: 0.75rem 1.5rem;
+  .source-bar {
+    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    padding: 0.65rem 1.5rem;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
   }
+  .source-label { font-size: 0.75rem; color: var(--text2); margin-right: 0.25rem; flex-shrink: 0; }
   .source-btn {
     padding: 0.3rem 0.85rem; border-radius: 50px;
     font-size: 0.75rem; font-weight: 600;
     background: var(--surface2); border: 1px solid var(--border2);
     color: var(--text2); cursor: pointer; transition: all 0.2s;
-    font-family: inherit;
+    font-family: inherit; display: flex; align-items: center; gap: 0.35rem;
   }
   .source-btn:hover { border-color: var(--accent); color: var(--accent); }
   .source-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .source-btn.loading { opacity: 0.6; pointer-events: none; }
+  .source-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* SUB/DUB TOGGLE */
+  .lang-toggle {
+    margin-left: auto; display: flex; gap: 0.35rem;
+  }
+  .lang-btn {
+    padding: 0.25rem 0.75rem; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;
+    background: var(--surface2); border: 1px solid var(--border2);
+    color: var(--text2); cursor: pointer; transition: all 0.2s;
+    font-family: inherit;
+  }
+  .lang-btn.active { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+  .lang-btn[data-lang="sub"].active { background: rgba(100,180,255,0.15); color: #64b4ff; border-color: rgba(100,180,255,0.3); }
+  .lang-btn[data-lang="dub"].active { background: rgba(255,160,50,0.15); color: #ffa032; border-color: rgba(255,160,50,0.3); }
 
   .player-sidebar {
     width: 320px; background: var(--surface); border-left: 1px solid var(--border);
@@ -387,14 +417,16 @@
 
   .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
   .toast { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 0.75rem 1.25rem; font-size: 0.875rem; color: var(--text); animation: slideIn 0.3s ease; max-width: 320px; display: flex; align-items: center; gap: 0.5rem; }
+  .toast.success { border-color: rgba(100,220,100,0.3); }
+  .toast.error { border-color: rgba(232,69,69,0.4); }
   @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
   .spinner { width: 36px; height: 36px; border: 3px solid var(--surface3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 2rem auto; }
+  .spinner-sm { width: 18px; height: 18px; border-width: 2px; margin: 0; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 89; }
 
-  /* EP GRID */
   .ep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 0.5rem; padding: 1rem 0; }
   .ep-grid-btn {
     background: var(--surface2); border: 1px solid var(--border2);
@@ -404,19 +436,15 @@
     font-family: 'JetBrains Mono', monospace;
   }
   .ep-grid-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .ep-grid-btn.watched { background: var(--surface3); }
 
-  /* GENRES */
   .genre-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
   .genre-card { border-radius: var(--radius); padding: 1.25rem 1rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; min-height: 90px; }
   .genre-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
   .genre-icon { font-size: 1.5rem; }
   .genre-name { font-weight: 600; font-size: 0.85rem; }
 
-  /* SCHEDULE */
   .schedule-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
   @media (max-width: 768px) { .schedule-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 480px) { .schedule-grid { grid-template-columns: repeat(2, 1fr); } }
   .schedule-day { background: var(--surface2); border-radius: var(--radius); padding: 0.75rem; border: 1px solid var(--border); }
   .schedule-day-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text3); margin-bottom: 0.5rem; }
   .schedule-day.today .schedule-day-label { color: var(--accent); }
@@ -435,6 +463,21 @@
   .empty-sub { font-size: 0.875rem; }
 
   .wl-count { background: var(--accent); color: #fff; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; display: inline-flex; align-items: center; justify-content: center; margin-left: auto; font-weight: 700; }
+
+  /* STREAM INFO PILL */
+  .stream-info-bar {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.5rem 1.5rem;
+    background: rgba(100,220,100,0.06);
+    border-bottom: 1px solid rgba(100,220,100,0.12);
+    font-size: 0.75rem; color: #7ddb7d;
+    flex-shrink: 0;
+  }
+  .stream-info-bar.error { background: rgba(232,69,69,0.06); border-color: rgba(232,69,69,0.12); color: var(--accent); }
+  .stream-info-bar.loading { background: rgba(255,180,50,0.06); border-color: rgba(255,180,50,0.12); color: #ffb432; }
+  .stream-info-bar.hidden { display: none; }
+  .stream-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse-dot 2s infinite; flex-shrink: 0; }
+  @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
 
   @media (max-width: 900px) {
     .sidebar { transform: translateX(-100%); z-index: 91; }
@@ -455,10 +498,6 @@
     .info-hero-content { flex-direction: column; align-items: flex-start; padding-top: 1.5rem; }
     .info-poster { width: 120px; height: 180px; }
     .info-title { font-size: 1.8rem; }
-  }
-  @media (max-width: 480px) {
-    .card-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
-    .nav-search { max-width: 180px; }
   }
 </style>
 </head>
@@ -671,12 +710,10 @@
         </div>
       </div>
     </div>
-
     <div class="section">
       <div class="section-title" style="margin-bottom:0.5rem;font-size:1.2rem">Episodes</div>
       <div id="episodesContainer"></div>
     </div>
-
     <div id="relatedSection" class="section">
       <div class="section-title" style="margin-bottom:1rem;font-size:1.2rem">More Like This</div>
       <div class="card-grid" id="relatedGrid"></div>
@@ -700,14 +737,32 @@
       <button class="btn btn-secondary" style="padding:0.4rem 0.9rem;font-size:0.8rem" onclick="nextEpisode()">Next ›</button>
     </div>
   </div>
-  <!-- Source Switcher -->
-  <div class="source-switcher" id="sourceSwitcher">
-    <span style="font-size:0.75rem;color:var(--text2);display:flex;align-items:center;margin-right:0.25rem">Server:</span>
+
+  <!-- Stream status bar -->
+  <div class="stream-info-bar hidden" id="streamInfoBar">
+    <div class="stream-dot"></div>
+    <span id="streamInfoText">Loading stream...</span>
   </div>
+
+  <!-- Source switcher -->
+  <div class="source-bar" id="sourceSwitcher">
+    <span class="source-label">Server:</span>
+    <div id="sourceButtons" style="display:flex;gap:0.5rem;flex-wrap:wrap;flex:1"></div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="sub" onclick="switchLang('sub',this)">SUB</button>
+      <button class="lang-btn" data-lang="dub" onclick="switchLang('dub',this)">DUB</button>
+    </div>
+  </div>
+
   <div class="player-body">
     <div class="player-main">
       <div class="video-wrapper">
-        <iframe id="videoFrame" allowfullscreen allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
+        <div class="video-status" id="videoStatus">
+          <div class="spinner"></div>
+          <div class="video-status-title">Finding Stream</div>
+          <div class="video-status-sub">Searching across providers for the best available source...</div>
+        </div>
+        <iframe id="videoFrame" allowfullscreen allow="autoplay; encrypted-media; fullscreen; picture-in-picture" style="display:none"></iframe>
       </div>
       <div class="player-info">
         <div class="player-anime-title" id="playerAnimeTitle"></div>
@@ -725,6 +780,21 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+// Consumet API - open source anime streaming API
+// These are public Consumet instances (no API key required)
+const CONSUMET_INSTANCES = [
+  'https://api.consumet.org',
+  'https://consumet-api.vercel.app',
+  'https://consumet.anime-nexus.com',
+];
+
+// We'll try each instance until one works
+let CONSUMET_BASE = CONSUMET_INSTANCES[0];
+
+// AniList GraphQL
+const ANILIST = 'https://graphql.anilist.co';
+
 // ─── STATE ────────────────────────────────────────────────────────────────────
 const state = {
   currentPage: 'home',
@@ -736,74 +806,90 @@ const state = {
   currentAnime: null,
   currentEp: 1,
   totalEps: 1,
+  currentLang: 'sub', // 'sub' or 'dub'
+  currentStreams: [],  // [{url, quality, isM3U8}]
+  currentSourceIdx: 0,
   watchlist: JSON.parse(localStorage.getItem('anistream_wl') || '[]'),
   history: JSON.parse(localStorage.getItem('anistream_hist') || '[]'),
+  streamCache: {}, // cache: `${animeId}-${ep}-${lang}` -> streams
 };
 
-// ─── EMBED PROVIDERS ─────────────────────────────────────────────────────────
-// These are legitimate anime embed aggregators that use AniList IDs
-const PROVIDERS = [
-  {
-    name: 'AllAnime',
-    getUrl: (anilistId, ep) => `https://allanime.day/anime/${anilistId}/episode/${ep}`,
-    icon: '🟦'
-  },
-  {
-    name: 'AnimeFF',
-    getUrl: (anilistId, ep) => `https://9anime.pl/watch/${toSlug(state.currentAnime)}.${anilistId}/ep-${ep}`,
-    icon: '🟥'
-  },
-  {
-    name: 'Vidstreaming',
-    getUrl: (anilistId, ep) => `https://vidstreaming.io/streaming.php?id=${anilistId}&ep=${ep}`,
-    icon: '🟧'
+// ─── CONSUMET API ─────────────────────────────────────────────────────────────
+async function consumetFetch(path) {
+  // Try each instance
+  for (const base of CONSUMET_INSTANCES) {
+    try {
+      const r = await fetch(`${base}${path}`, { signal: AbortSignal.timeout(8000) });
+      if (r.ok) {
+        const data = await r.json();
+        CONSUMET_BASE = base; // remember working instance
+        return data;
+      }
+    } catch (e) { /* try next */ }
   }
-];
+  return null;
+}
 
-// Primary working embeds keyed by approach
-function getEmbedUrls(anime, ep) {
-  const anilistId = anime.id;
-  const title = (anime.title.english || anime.title.romaji || '').toLowerCase();
-  const slug = title.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const epNum = parseInt(ep) || 1;
+// Search for anime on GogoAnime via Consumet (by title)
+async function findGogoId(animeTitle, ep) {
+  const title = animeTitle.replace(/[^a-zA-Z0-9 ]/g, '').trim();
+  const encoded = encodeURIComponent(title);
+  const data = await consumetFetch(`/anime/gogoanime/${encoded}`);
+  if (!data || !data.results || !data.results.length) return null;
 
-  return [
-    {
-      name: '🔴 Server 1',
-      // HiAnime (Zoro) embed — uses AniList ID mapping
-      url: `https://hianime.to/watch/${slug}-${anilistId}?ep=${epNum}`
-    },
-    {
-      name: '🟠 Server 2',
-      // Aniwave
-      url: `https://aniwave.to/watch/${slug}.${anilistId}/ep-${epNum}`
-    },
-    {
-      name: '🟡 Server 3',
-      // AniCrush
-      url: `https://anicrush.to/watch/${slug}-${anilistId}/${epNum}`
-    },
-    {
-      name: '🟢 Server 4',
-      // Kaido — direct embed by AniList ID
-      url: `https://kaido.to/watch/${slug}-${anilistId}?ep=${epNum}`
-    },
-    {
-      name: '🔵 Server 5',
-      // Yugen
-      url: `https://yugen.to/watch/${anilistId}/${epNum}/`
-    },
-    {
-      name: '⚪ Server 6',
-      // 9anime fallback
-      url: `https://9anime.gs/watch/${slug}.${anilistId}/ep-${epNum}`
-    }
-  ];
+  // Try to find best match (dubbed or subbed based on lang preference)
+  const lang = state.currentLang;
+  const results = data.results;
+
+  // For dub, prefer results with "-dub" in ID
+  let match;
+  if (lang === 'dub') {
+    match = results.find(r => r.id.includes('-dub') || r.id.includes('dub'));
+  }
+  if (!match) {
+    // Find closest title match (not dub)
+    match = results.find(r => !r.id.includes('-dub')) || results[0];
+  }
+  return match ? match.id : null;
+}
+
+// Get streaming links from Consumet
+async function getStreamsFromConsumet(gogoId, ep) {
+  const data = await consumetFetch(`/anime/gogoanime/watch/${encodeURIComponent(gogoId)}-episode-${ep}`);
+  if (!data || !data.sources || !data.sources.length) return [];
+  return data.sources; // [{url, quality, isM3U8}]
+}
+
+// Full flow: find anime -> get episode streams
+async function findStreams(anime, ep) {
+  const title = anime.title.english || anime.title.romaji;
+  const cacheKey = `${anime.id}-${ep}-${state.currentLang}`;
+
+  if (state.streamCache[cacheKey]) {
+    return state.streamCache[cacheKey];
+  }
+
+  setStreamStatus('loading', '🔍 Searching for stream...');
+
+  // 1. Try to find GogoAnime ID
+  const gogoId = await findGogoId(title, ep);
+  if (!gogoId) {
+    setStreamStatus('error', '❌ Anime not found on provider. Try a different server.');
+    return [];
+  }
+
+  // 2. Get streams
+  const streams = await getStreamsFromConsumet(gogoId, ep);
+  if (!streams.length) {
+    setStreamStatus('error', '❌ No streams found for this episode.');
+    return [];
+  }
+
+  state.streamCache[cacheKey] = streams;
+  return streams;
 }
 
 // ─── ANILIST API ──────────────────────────────────────────────────────────────
-const ANILIST = 'https://graphql.anilist.co';
-
 async function anilistQuery(query, variables = {}) {
   try {
     const r = await fetch(ANILIST, {
@@ -862,16 +948,13 @@ function renderHero(idx) {
   const anime = state.heroAnimes[idx];
   if (!anime) return;
   state.heroIdx = idx;
-  const bg = document.getElementById('heroBg');
-  const content = document.getElementById('heroContent');
-  const dots = document.getElementById('heroDots');
 
-  bg.style.backgroundImage = `url(${anime.bannerImage || anime.coverImage.extraLarge})`;
+  document.getElementById('heroBg').style.backgroundImage = `url(${anime.bannerImage || anime.coverImage.extraLarge})`;
 
   const title = anime.title.english || anime.title.romaji;
   const score = anime.averageScore ? (anime.averageScore / 10).toFixed(1) : 'N/A';
   const animeData = encodeAnime(anime);
-  content.innerHTML = `
+  document.getElementById('heroContent').innerHTML = `
     <div class="hero-badge">⚡ Trending #${idx + 1}</div>
     <div class="hero-meta">
       <span>⭐ ${score}</span>
@@ -892,7 +975,7 @@ function renderHero(idx) {
       </button>
     </div>`;
 
-  dots.innerHTML = state.heroAnimes.map((_, i) =>
+  document.getElementById('heroDots').innerHTML = state.heroAnimes.map((_, i) =>
     `<button class="hero-dot${i === idx ? ' active' : ''}" onclick="renderHero(${i})"></button>`
   ).join('');
 
@@ -969,13 +1052,10 @@ function openInfo(encoded) {
     `<span class="tag">${anime.format || 'TV'}</span>`;
 
   updateWlToggleBtn();
-
   document.getElementById('watchFirstBtn').onclick = () => playEpisode(1);
 
-  // Build episode grid
   const epCount = Math.max(totalEps, 1);
-  const container = document.getElementById('episodesContainer');
-  container.innerHTML = `<div class="ep-grid">${
+  document.getElementById('episodesContainer').innerHTML = `<div class="ep-grid">${
     Array.from({length: epCount}, (_, i) => i + 1).map(ep =>
       `<div class="ep-grid-btn" onclick="playEpisode(${ep})">EP ${ep}</div>`
     ).join('')
@@ -986,7 +1066,6 @@ function openInfo(encoded) {
   document.getElementById('playerView').classList.remove('show');
   window.scrollTo(0, 0);
 
-  // Load related
   if (anime.genres && anime.genres.length) {
     anilistQuery(GENRE_Q, { genre: anime.genres[0], page: 1 }).then(rel => {
       if (rel) {
@@ -1018,8 +1097,32 @@ function toggleWatchlistItem() {
   updateWlToggleBtn();
 }
 
+// ─── STREAM STATUS ─────────────────────────────────────────────────────────────
+function setStreamStatus(type, text) {
+  const bar = document.getElementById('streamInfoBar');
+  const textEl = document.getElementById('streamInfoText');
+  bar.className = `stream-info-bar ${type}`;
+  textEl.textContent = text;
+}
+
+function setVideoStatus(icon, title, sub) {
+  const overlay = document.getElementById('videoStatus');
+  const frame = document.getElementById('videoFrame');
+  overlay.classList.remove('hidden');
+  frame.style.display = 'none';
+  overlay.innerHTML = `
+    <div class="video-status-icon">${icon}</div>
+    <div class="video-status-title">${title}</div>
+    <div class="video-status-sub">${sub}</div>`;
+}
+
+function showVideoPlayer() {
+  document.getElementById('videoStatus').classList.add('hidden');
+  document.getElementById('videoFrame').style.display = 'block';
+}
+
 // ─── PLAYER ───────────────────────────────────────────────────────────────────
-function playEpisode(epNum) {
+async function playEpisode(epNum) {
   const anime = state.currentAnime;
   if (!anime) return;
 
@@ -1030,7 +1133,7 @@ function playEpisode(epNum) {
   document.getElementById('playerTitle').textContent = title;
   document.getElementById('playerEpTag').textContent = `· Episode ${epNum}`;
   document.getElementById('playerAnimeTitle').textContent = title;
-  document.getElementById('playerEpInfo').textContent = `Episode ${epNum} of ${state.totalEps}`;
+  document.getElementById('playerEpInfo').textContent = `Episode ${epNum} of ${state.totalEps} · ${state.currentLang === 'sub' ? 'Subbed' : 'Dubbed'}`;
   document.getElementById('playerDesc').textContent = (anime.description || '').replace(/<[^>]*>/g, '').slice(0, 200) + '...';
 
   document.getElementById('playerBackBtn').onclick = () => {
@@ -1038,22 +1141,31 @@ function playEpisode(epNum) {
     document.getElementById('videoFrame').src = 'about:blank';
   };
 
-  // Build source buttons
-  const embeds = getEmbedUrls(anime, epNum);
-  const switcher = document.getElementById('sourceSwitcher');
-  switcher.innerHTML = `<span style="font-size:0.75rem;color:var(--text2);display:flex;align-items:center;margin-right:0.25rem">Server:</span>` +
-    embeds.map((s, i) =>
-      `<button class="source-btn${i === 0 ? ' active' : ''}" onclick="switchSource(${i}, this)">${s.name}</button>`
-    ).join('');
-
-  // Load first source
-  loadSource(embeds[0].url);
-
-  // Episode list
   renderEpList(epNum);
-
-  // History
   addToHistory(anime);
+
+  // Show loading state
+  setVideoStatus('⏳', 'Finding Stream', 'Connecting to GogoAnime via Consumet API...');
+  setStreamStatus('loading', '🔍 Fetching stream from GogoAnime...');
+
+  // Fetch real streams
+  const streams = await findStreams(anime, epNum);
+  state.currentStreams = streams;
+
+  if (!streams.length) {
+    setVideoStatus('😔', 'Stream Unavailable', 'This episode could not be found on the provider. The anime title may not match exactly, or this episode may not be available yet. Try searching directly on GogoAnime.');
+    setStreamStatus('error', '❌ No streams found — try another episode or check back later');
+    buildFallbackSources(anime, epNum);
+    return;
+  }
+
+  // Build quality source buttons
+  buildQualitySources(streams);
+
+  // Play best quality (1080p > 720p > 480p > default)
+  const best = pickBestQuality(streams);
+  state.currentSourceIdx = streams.indexOf(best);
+  loadStream(best);
 
   setTimeout(() => {
     const activeEp = document.querySelector('.ep-item.active');
@@ -1061,58 +1173,119 @@ function playEpisode(epNum) {
   }, 100);
 }
 
-function getEmbedUrls(anime, ep) {
-  const anilistId = anime.id;
-  const title = (anime.title.english || anime.title.romaji || '').toLowerCase();
-  const slug = title.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const epNum = parseInt(ep) || 1;
-
-  return [
-    {
-      name: '🔴 Server 1',
-      url: `https://hianime.to/watch/${slug}-${anilistId}?ep=${epNum}`
-    },
-    {
-      name: '🟠 Server 2',
-      url: `https://aniwave.to/watch/${slug}.${anilistId}/ep-${epNum}`
-    },
-    {
-      name: '🟡 Server 3',
-      url: `https://kaido.to/watch/${slug}-${anilistId}?ep=${epNum}`
-    },
-    {
-      name: '🟢 Server 4',
-      url: `https://anix.to/watch/${slug}-${anilistId}/${epNum}`
-    },
-    {
-      name: '🔵 Server 5',
-      url: `https://yugen.to/watch/${anilistId}/${epNum}/`
-    },
-    {
-      name: '⚪ Server 6',
-      url: `https://anicrush.to/watch/${slug}-${anilistId}/${epNum}`
-    }
-  ];
+function pickBestQuality(streams) {
+  const order = ['1080p', '720p', '480p', '360p', 'default', 'backup'];
+  for (const q of order) {
+    const s = streams.find(s => s.quality === q || s.quality?.includes(q));
+    if (s) return s;
+  }
+  return streams[streams.length - 1] || streams[0];
 }
 
-function loadSource(url) {
+function buildQualitySources(streams) {
+  const container = document.getElementById('sourceButtons');
+  const qualityIcons = { '1080p': '🔴', '720p': '🟠', '480p': '🟡', '360p': '🟢', 'default': '⚪', 'backup': '🔵' };
+
+  container.innerHTML = streams.map((s, i) => {
+    const icon = qualityIcons[s.quality] || '⚫';
+    const label = s.quality || `Source ${i + 1}`;
+    return `<button class="source-btn${i === 0 ? ' active' : ''}" onclick="switchQuality(${i}, this)">
+      <span class="source-dot"></span>${icon} ${label}
+    </button>`;
+  }).join('');
+}
+
+function buildFallbackSources(anime, ep) {
+  // When Consumet fails, show a helpful message with direct links
+  const container = document.getElementById('sourceButtons');
+  const title = encodeURIComponent(anime.title.english || anime.title.romaji);
+  container.innerHTML = `
+    <span style="font-size:0.75rem;color:var(--text2)">Try directly:</span>
+    <a href="https://www1.gogoanime.bid/search.html?keyword=${title}" target="_blank" class="source-btn" style="text-decoration:none">🔴 GogoAnime</a>
+    <a href="https://zoro.to/search?keyword=${title}" target="_blank" class="source-btn" style="text-decoration:none">🟠 Zoro</a>
+    <a href="https://animepahe.ru/?s=${title}" target="_blank" class="source-btn" style="text-decoration:none">🟡 AnimePahe</a>
+  `;
+}
+
+function loadStream(stream) {
+  if (!stream || !stream.url) return;
+
   const frame = document.getElementById('videoFrame');
-  frame.src = url;
-  showToast('🔄 Loading player...', 'info');
+
+  // If it's an M3U8 stream, we need HLS.js to play it in the iframe
+  // We'll use an HLS player proxy page approach, OR directly set src
+  // Most modern browsers support HLS natively (Safari) or via MSE
+  if (stream.isM3U8) {
+    // Use a simple HLS player via a data URL with hls.js
+    const playerHtml = buildHLSPlayer(stream.url);
+    frame.src = 'data:text/html;charset=utf-8,' + encodeURIComponent(playerHtml);
+  } else {
+    frame.src = stream.url;
+  }
+
+  showVideoPlayer();
+  setStreamStatus('', `✅ Streaming · ${stream.quality || 'Auto'} quality · GogoAnime`);
+  showToast(`✅ Loaded ${stream.quality || 'stream'} quality`, 'success');
 }
 
-function switchSource(idx, btn) {
-  const anime = state.currentAnime;
-  const embeds = getEmbedUrls(anime, state.currentEp);
-  document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+function buildHLSPlayer(m3u8Url) {
+  return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  video { width:100%; height:100%; object-fit:contain; }
+</style>
+</head>
+<body>
+<video id="v" controls autoplay playsinline></video>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"><\/script>
+<script>
+  const video = document.getElementById('v');
+  const src = '${m3u8Url.replace(/'/g, "\\'")}';
+  if (Hls.isSupported()) {
+    const hls = new Hls({ enableWorker: true, lowLatencyMode: false });
+    hls.loadSource(src);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
+    hls.on(Hls.Events.ERROR, (e, d) => {
+      if (d.fatal) {
+        document.body.innerHTML = '<div style="color:#e84545;font-family:sans-serif;text-align:center;padding:2rem"><p style="font-size:1.2rem">⚠️ Stream Error</p><p style="margin-top:0.5rem;color:#888;font-size:0.85rem">The stream failed to load. Try a different quality.</p></div>';
+      }
+    });
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = src;
+    video.play().catch(()=>{});
+  } else {
+    document.body.innerHTML = '<div style="color:#e84545;font-family:sans-serif;text-align:center;padding:2rem"><p>HLS not supported in this browser.</p></div>';
+  }
+<\/script>
+</body>
+</html>`;
+}
+
+function switchQuality(idx, btn) {
+  document.querySelectorAll('#sourceButtons .source-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  loadSource(embeds[idx].url);
+  state.currentSourceIdx = idx;
+  loadStream(state.currentStreams[idx]);
+}
+
+function switchLang(lang, btn) {
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.currentLang = lang;
+  // Re-fetch streams for new language
+  if (state.currentAnime) {
+    playEpisode(state.currentEp);
+  }
 }
 
 function renderEpList(currentEp) {
   const list = document.getElementById('epList');
-  const total = state.totalEps;
-  list.innerHTML = Array.from({length: total}, (_, i) => i + 1).map(ep => {
+  list.innerHTML = Array.from({length: state.totalEps}, (_, i) => i + 1).map(ep => {
     const active = ep === currentEp ? 'active' : '';
     return `<div class="ep-item ${active}" onclick="playEpisode(${ep})">
       <div class="ep-num-badge">${ep}</div>
@@ -1179,7 +1352,7 @@ function setupSearch() {
 
 async function doSearch(q) {
   const res = document.getElementById('searchResults');
-  res.innerHTML = '<div style="padding:1rem;text-align:center"><div class="spinner" style="margin:0 auto;width:24px;height:24px;border-width:2px"></div></div>';
+  res.innerHTML = '<div style="padding:1rem;text-align:center"><div class="spinner spinner-sm" style="margin:0 auto"></div></div>';
   res.classList.add('show');
 
   const data = await anilistQuery(SEARCH_Q, { search: q });
@@ -1227,8 +1400,7 @@ const GENRES = [
 ];
 
 function renderGenresPage() {
-  const grid = document.getElementById('genreGrid');
-  grid.innerHTML = GENRES.map(g =>
+  document.getElementById('genreGrid').innerHTML = GENRES.map(g =>
     `<div class="genre-card" style="background:${g.color}18;border-color:${g.color}30" onclick="loadGenre('${g.name}')">
       <span class="genre-icon">${g.icon}</span>
       <div class="genre-name">${g.name}</div>
@@ -1329,7 +1501,6 @@ function renderHistoryPage() {
   }
 }
 
-// ─── TRENDING FILTER ─────────────────────────────────────────────────────────
 function filterTrending(format, btn) {
   document.querySelectorAll('#trendingTabs .tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -1337,7 +1508,6 @@ function filterTrending(format, btn) {
   renderCardGrid('trendingAllGrid', filtered);
 }
 
-// ─── SIDEBAR MOBILE ──────────────────────────────────────────────────────────
 function setupMenuBtn() {
   document.getElementById('menuBtn').addEventListener('click', () => {
     document.getElementById('sidebar').classList.toggle('open');
@@ -1351,10 +1521,9 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay').classList.remove('show');
 }
 
-// ─── TOAST ───────────────────────────────────────────────────────────────────
 function showToast(msg, type = 'info') {
   const el = document.createElement('div');
-  el.className = 'toast';
+  el.className = `toast ${type}`;
   el.textContent = msg;
   document.getElementById('toastContainer').appendChild(el);
   setTimeout(() => el.remove(), 3500);
